@@ -1,6 +1,6 @@
 import numpy as np
-from collections import deque
 from math import sqrt as sqrt
+import heapq
 
 # flags
 KNOWN = 0
@@ -108,8 +108,8 @@ def _compute_outside_dists(height, width, dists, flags, band, radius):
         if last_dist >= double_radius:
             break
     
-        # pop BAND pixel closest to initial mask contour and flag it as KNOWN        
-        y, x = band.popleft()
+        # pop BAND pixel closest to initial mask contour and flag it as KNOWN
+        _, y, x = heapq.heappop(band)
         flags[y, x] = KNOWN
 
         # process immediate neighbors (top/bottom/left/right)
@@ -134,7 +134,7 @@ def _compute_outside_dists(height, width, dists, flags, band, radius):
 
             # add neighbor to narrow band            
             flags[nb_y, nb_x] = BAND
-            band.append((nb_y, nb_x))
+            heapq.heappush(band, (last_dist, nb_y, nb_x))
 
     # distances are opposite to actual FFM propagation direction, fix it
     dists *= -1.0
@@ -146,7 +146,7 @@ def _init(height, width, mask, radius):
     # status of each pixel, ie KNOWN, BAND or UNKNOWN
     flags = mask.astype(int) * UNKNOWN
     # narrow band, queue of contour pixels
-    band = deque()
+    band = []
 
     mask_y, mask_x = mask.nonzero()
     for y, x in zip(mask_y, mask_x):        
@@ -165,7 +165,7 @@ def _init(height, width, mask, radius):
             if mask[nb_y, nb_x] == 0:
                 flags[nb_y, nb_x] = BAND
                 dists[nb_y, nb_x] = 0.0
-                band.append((nb_y, nb_x))
+                heapq.heappush(band, (0.0, nb_y, nb_x))
     
     
     # compute distance to inital mask contour for KNOWN pixels
@@ -243,7 +243,7 @@ def inpaint(img, mask, radius=5):
     # by sorting the area pixels by their distance to the initial contour
     while band:
         # pop band pixel closest to initial mask contour
-        y, x = band.popleft()
+        _, y, x = heapq.heappop(band)
         # flag it as KNOWN
         flags[y, x] = KNOWN
 
@@ -277,4 +277,4 @@ def inpaint(img, mask, radius=5):
             # add neighbor to narrow band
             flags[nb_y, nb_x] = BAND
             # push neighbor on band
-            band.append((nb_y, nb_x))
+            heapq.heappush(band, (nb_dist, nb_y, nb_x))
