@@ -179,7 +179,7 @@ def _inpaint_pixel(y, x, img, height, width, dists, flags, radius):
     dist = dists[y, x]
     # normal to pixel, ie direction of propagation of the FFM
     dist_grad_y, dist_grad_x = _pixel_gradient(y, x, height, width, dists, flags)
-    pixel_vals = np.zeros((3), dtype=float)
+    pixel_sum = np.zeros((3), dtype=float)
     weight_sum = 0.0
 
     # iterate on each pixel in neighborhood (nb stands for neighbor)
@@ -221,14 +221,13 @@ def _inpaint_pixel(y, x, img, height, width, dists, flags, radius):
 
             weight = abs(dir_factor * dist_factor * level_factor)
 
-            pixel_vals[0] += weight * img[nb_y, nb_x, 0]
-            pixel_vals[1] += weight * img[nb_y, nb_x, 1]
-            pixel_vals[2] += weight * img[nb_y, nb_x, 2]
+            pixel_sum[0] += weight * img[nb_y, nb_x, 0]
+            pixel_sum[1] += weight * img[nb_y, nb_x, 1]
+            pixel_sum[2] += weight * img[nb_y, nb_x, 2]
 
             weight_sum += weight
 
-    pixel_vals /= weight_sum
-    return pixel_vals
+    return pixel_sum / weight_sum
 
 # main inpainting function
 def inpaint(img, mask, radius=5):
