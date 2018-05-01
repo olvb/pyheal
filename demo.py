@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
+import argparse
 import pyheal
 import imageio
-import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('in_path', metavar='input_img', type=str,
-                     help='path to input image')
+	 				help='path to input image')
 parser.add_argument('mask_path', metavar='mask_img', type=str,
-                   help='path to mask image')
+					help='path to mask image')
 parser.add_argument('out_path', metavar='ouput_img', type=str,
-                   help='path to output image')
+					help='path to output image')
 parser.add_argument('-r', '--radius', metavar='R', nargs=1, type=int, default=[5],
- 					help='neighborhood radius')
+					help='neighborhood radius')
 
 args = parser.parse_args()
 

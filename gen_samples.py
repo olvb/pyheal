@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
+import os
 import pyheal
 import cv2
-import os
 
 for file in os.scandir('samples/'):
     if not file.name.endswith('_in.png'):

@@ -1,6 +1,6 @@
-import numpy as np
 from math import sqrt as sqrt
 import heapq
+import numpy as np
 
 # flags
 KNOWN = 0
@@ -14,7 +14,7 @@ def _solve_eikonal(y1, x1, y2, x2, height, width, dists, flags):
     # check image frame
     if y1 < 0 or y1 >= height or x1 < 0 or x1 >= width:
         return INF
-    
+
     if y2 < 0 or y2 >= height or x2 < 0 or x2 >= width:
         return INF
 
@@ -36,9 +36,9 @@ def _solve_eikonal(y1, x1, y2, x2, height, width, dists, flags):
                 return s
             # unsolvable
             return INF
-    
+
     # only 1st pixel is known
-    if flag1 == KNOWN:    
+    if flag1 == KNOWN:
         dist1 = dists[y1, x1]
         return 1.0 + dist1
 
@@ -71,7 +71,7 @@ def _pixel_gradient(y, x, height, width, vals, flags):
             grad_y = vals[next_y, x] - val
         else:
             grad_y = 0.0
-    
+
     # compute grad_x
     prev_x = x - 1
     next_x = x + 1
@@ -82,9 +82,9 @@ def _pixel_gradient(y, x, height, width, vals, flags):
         flag_next_x = flags[y, next_x]
 
         if flag_prev_x != UNKNOWN and flag_next_x != UNKNOWN:
-                grad_x = (vals[y, next_x] - vals[y, prev_x]) / 2.0
+            grad_x = (vals[y, next_x] - vals[y, prev_x]) / 2.0
         elif flag_prev_x != UNKNOWN:
-                grad_x = val - vals[y, prev_x]
+            grad_x = val - vals[y, prev_x]
         elif flag_next_x != UNKNOWN:
             grad_x = vals[y, next_x] - val
         else:
@@ -101,13 +101,13 @@ def _compute_outside_dists(height, width, dists, flags, band, radius):
     flags[orig_flags == KNOWN] = UNKNOWN
     flags[orig_flags == UNKNOWN] = KNOWN
 
-    last_dist = 0.0    
+    last_dist = 0.0
     double_radius = radius * 2
     while band:
         # reached radius limit, stop FFM
         if last_dist >= double_radius:
             break
-    
+
         # pop BAND pixel closest to initial mask contour and flag it as KNOWN
         _, y, x = heapq.heappop(band)
         flags[y, x] = KNOWN
@@ -118,11 +118,11 @@ def _compute_outside_dists(height, width, dists, flags, band, radius):
             # skip out of frame
             if nb_y < 0 or nb_y >= height or nb_x < 0 or nb_x >= width:
                 continue
-    
+
             # neighbor already processed, nothing to do
             if flags[nb_y, nb_x] != UNKNOWN:
                 continue
-    
+
             # compute neighbor distance to inital mask contour
             last_dist = min([
                 _solve_eikonal(nb_y - 1, nb_x, nb_y, nb_x - 1, height, width, dists, flags),
@@ -132,7 +132,7 @@ def _compute_outside_dists(height, width, dists, flags, band, radius):
             ])
             dists[nb_y, nb_x] = last_dist
 
-            # add neighbor to narrow band            
+            # add neighbor to narrow band
             flags[nb_y, nb_x] = BAND
             heapq.heappush(band, (last_dist, nb_y, nb_x))
 
@@ -149,7 +149,7 @@ def _init(height, width, mask, radius):
     band = []
 
     mask_y, mask_x = mask.nonzero()
-    for y, x in zip(mask_y, mask_x):        
+    for y, x in zip(mask_y, mask_x):
         # look for BAND pixels in neighbors (top/bottom/left/right)
         neighbors = [(y - 1, x), (y, x - 1), (y + 1, x), (y, x + 1)]
         for nb_y, nb_x in neighbors:
@@ -166,10 +166,10 @@ def _init(height, width, mask, radius):
                 flags[nb_y, nb_x] = BAND
                 dists[nb_y, nb_x] = 0.0
                 heapq.heappush(band, (0.0, nb_y, nb_x))
-    
-    
+
+
     # compute distance to inital mask contour for KNOWN pixels
-    # (by inverting mask/flags and running FFM)    
+    # (by inverting mask/flags and running FFM)
     _compute_outside_dists(height, width, dists, flags, band, radius)
 
     return dists, flags, band
@@ -187,16 +187,16 @@ def _inpaint_pixel(y, x, img, height, width, dists, flags, radius):
         #  pixel out of frame
         if nb_y < 0 or nb_y >= height:
             continue
-        
+
         for nb_x in range(x - radius, x + radius + 1):
             # pixel out of frame
             if nb_x < 0 or nb_x >= width:
                 continue
-            
+
             # skip unknown pixels (including pixel being inpainted)
             if flags[nb_y, nb_x] == UNKNOWN:
                 continue
-            
+
             # vector from point to neighbor
             dir_y = y - nb_y
             dir_x = x - nb_x
@@ -232,7 +232,7 @@ def _inpaint_pixel(y, x, img, height, width, dists, flags, radius):
 # main inpainting function
 def inpaint(img, mask, radius=5):
     if img.shape[0:2] != mask.shape[0:2]:
-        error('Image and mask dimensions do not match')
+        raise ValueError("Image and mask dimensions do not match")
 
     height, width = img.shape[0:2]
     dists, flags, band = _init(height, width, mask, radius)
