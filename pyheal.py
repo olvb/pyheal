@@ -10,6 +10,7 @@ UNKNOWN = 2
 INF = 1e6 # dont use np.inf to avoid inf * 0
 EPS = 1e-6
 
+# solves a step of the eikonal equation in order to find closest quadrant
 def _solve_eikonal(y1, x1, y2, x2, height, width, dists, flags):
     # check image frame
     if y1 < 0 or y1 >= height or x1 < 0 or x1 >= width:
