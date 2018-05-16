@@ -20,7 +20,7 @@ Despite closely following the same algorithm, our Python version is considerably
 
 # Results
 
-Click for full-scale image
+*Click for full-scale image*
 
 | Initial image               | Pyheal                        | OpenCV                      |
 | :-------------------------: | :---------------------------: | :-------------------------: |
