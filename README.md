@@ -1,4 +1,4 @@
-# How it works
+# FMM Inpainting
 
 [Alexander Telea's algorithm][1] uses the Fast Marching Method (FFM) to construct and maintain a list of the pixels forming the contour of area to inpaint. This area is progressively shrinked while pixels are processed until none remain to be inpainted. Pixels are handled starting from the initial contour, then going closer towards the center of the area to inpaint, as the contour itself is tightened.
 
@@ -6,8 +6,8 @@
 
 FFM only helps with the order in which pixels are processed, but does not determine how each pixel is going to be actually inpainted. Telea performs a weighted average of all pixels in the neighborhood of the inpainted pixel. The neighborhood is determined by a radius, which value should be close to the thickness of the area to inpainted. The weight function depends on the following factors:
 - the distance between a pixel and it neighbors, ie closers neighbors contribute more;
-- the level set distance to the original contour, ie neighbors on the same level set contribute more;
-- the colinearity of the vector from a pixel to its neighbors and the FFM direction of propagation. This last factor will have the effect of extending isophotes (ie lines) reaching the area to inpaint, by giving more weight to neighbors when they are in the axis starting from the inpainting pixel in the direction of the FFM.
+- the level set distance to the original contour, ie neighbors on the same level set (or iso line) contribute more;
+- the colinearity of the vector from a pixel to its neighbors and the FFM direction of propagation. This factor will have the effect of extending isophotes (ie lines) reaching the area to inpaint, by giving more weight to neighbors when they are in the axis going from the inpainting pixel in the direction of the FFM.
 
 # Implementations details
 
@@ -19,6 +19,8 @@ Our implementation borrows from different source codes, including the [OpenCV C+
 Despite closely following the same algorithm, our Python version is considerably slower than the mentioned implementations. In order to keep the processing time under a reasonable amount, we have chosen to only compute the weighted average previously described, dropping the average gradient that is also mentioned in the article and applied in most implementations. This allows for a x6 speed gain while maintaining "good-enough" results, albeit not as smooth.
 
 # Results
+
+Click for full-scale image
 
 | Initial image               | Pyheal                        | OpenCV                      |
 | :-------------------------: | :---------------------------: | :-------------------------: |
