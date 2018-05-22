@@ -10,7 +10,7 @@ FFM only helps with the order in which pixels are processed, but does not determ
 [1]: https://www.rug.nl/research/portal/files/14404904/2004JGraphToolsTelea.pdf
 [2]: https://math.berkeley.edu/~sethian/2006/Explanations/fast_marching_explain.html
 
-# Implementations details
+# Python implementation
 
 Our implementation borrows from several sources, including the [OpenCV C++ implementation][1] and [Telea's implementation][2] itself. As advised in the original paper, we first run a FFM in order to compute distances between pixels outside of the mask and the initial mask contour, before running the main FFM that performs the actual inpainting.
 
