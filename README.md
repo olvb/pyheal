@@ -12,7 +12,7 @@ FFM only helps with the order in which pixels are processed, but does not determ
 
 # Python implementation
 
-Our implementation borrows from several sources, including the [OpenCV C++ implementation][1] and [Telea's implementation][2] itself. As advised in the original paper, we first run a FFM in order to compute distances between pixels outside of the mask and the initial mask contour, before running the main FFM that performs the actual inpainting.
+Our implementation borrows from several sources, including the [OpenCV C++ implementation][3] and [Telea's implementation][4] itself. As advised in the original paper, we first run a FFM in order to compute distances between pixels outside of the mask and the initial mask contour, before running the main FFM that performs the actual inpainting.
 
 Despite closely following the same algorithm, our Python version is considerably slower than the mentioned implementations. Indeed FFM inpainting is not a vectorized algorithm but rather an iterative one, and therefore doesn't fully benefit from using NumPy. In order to keep the processing time under a reasonable amount, we have chosen to only compute the weighted average previously described, dropping the average gradient that is also mentioned in the article and applied in most implementations. This allows for a x6 speed gain while maintaining "good-enough" results, albeit not as smooth.
 
