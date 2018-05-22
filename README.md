@@ -1,11 +1,11 @@
 # Fast marching inpainting
 
-Following the idea that known image information has to be propagated from the contour of the area to inpaint towards the innermost parts of the area, [Alexander Telea's inpainting algorithm][1] uses Sethian's [fast marching method][2] (FFM) to construct and maintain a list of the pixels forming the contour. The area delimited by this band is progressively shrunk while pixels are processed until none remain to be inpainted.
+Following the idea that known image information has to be propagated from the contour of the area to inpaint towards its innermost parts, [Alexander Telea's inpainting algorithm][1] uses Sethian's [fast marching method][2] (FFM) to construct and maintain a list of the pixels forming the contour. The area delimited by this band is progressively shrunk while pixels are processed until none remain to be inpainted.
 
 FFM only helps with the order in which pixels are processed, but does not determine how each pixel is going to be actually inpainted. Telea performs a weighted average of all pixels in the neighborhood of the inpainted pixel. The neighborhood is determined by a radius, which value should be close to the thickness of the area to inpainted. The weight function depends on the following factors:
 - the distance between a pixel and it neighbors, ie closers neighbors contribute more;
 - the level set distance to the original contour, ie neighbors on the same level set (or iso line) contribute more;
-- the collinearity of the vector from a pixel to its neighbors and the FFM direction of propagation. This factor will have the effect of extending isophotes (ie lines) reaching the area to inpaint, by giving more weight to neighbors when they are in the axis going from the inpainting pixel in the direction of the FFM.
+- the collinearity of the vector from a pixel to its neighbors and the FFM direction of propagation. This factor will have the effect of extending isophotes (ie lines) reaching the area to inpaint, by giving more weight to neighbors when they are in the axis going from the inpainting pixel in the direction of propagation of the FFM.
 
 [1]: https://www.rug.nl/research/portal/files/14404904/2004JGraphToolsTelea.pdf
 [2]: https://math.berkeley.edu/~sethian/2006/Explanations/fast_marching_explain.html
